@@ -10,6 +10,11 @@ export class LotrController {
     return await this.lotrService.movies();
   }
 
+  @Get('movies/:movieId')
+  async movie(@Param('movieId') movieId: string) {
+    return await this.lotrService.movie(movieId);
+  }
+
   @Get('characters')
   async characters() {
     return await this.lotrService.characters();

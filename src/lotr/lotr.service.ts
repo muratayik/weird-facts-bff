@@ -1,6 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { AxiosService } from '../axios/axios.service';
 import { ApiType } from 'src/axios/axios.apiType.enum';
+import faker from 'faker';
 
 @Injectable()
 export class LotrService {
@@ -8,11 +9,42 @@ export class LotrService {
 
   async movies() {
     const movieResult = await this.axiosService.get(ApiType.lotr, 'movie');
-    return movieResult.docs.filter(movie => movie.runtimeInMinutes < 300);
+    const moviesThatAreNotBundled = movieResult.docs.filter(
+      movie => movie.runtimeInMinutes < 300,
+    );
+    return moviesThatAreNotBundled.map(movie => {
+      const {
+        _id,
+        name,
+        runtimeInMinutes,
+        budgetInMillions,
+        boxOfficeRevenueInMillions,
+        academyAwardNominations,
+        academyAwardWins,
+      } = movie;
+      return {
+        _id,
+        name,
+        runtimeInMinutes,
+        budgetInMillions,
+        boxOfficeRevenueInMillions,
+        academyAwardNominations,
+        academyAwardWins,
+        imagePath: faker.image.avatar(),
+      };
+    });
   }
 
   async movie(movieId: string) {
-    return await this.axiosService.get(ApiType.lotr, `movie/${movieId}`);
+    const selectedMovie = await this.axiosService.get(
+      ApiType.lotr,
+      `movie/${movieId}`,
+    );
+    if (!selectedMovie) {
+      throw new NotFoundException();
+    }
+
+    return selectedMovie;
   }
 
   async characters() {
