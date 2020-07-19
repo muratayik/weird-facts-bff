@@ -67,9 +67,15 @@ export class LotrService {
       new Set(quotesOfMovie.map(quote => quote.character)),
     );
 
-    return characterIds.map(characterId =>
-      allCharacters.find(char => char._id === characterId),
-    );
+    return characterIds.map(characterId => {
+      const foundCharacter = allCharacters.find(
+        char => char._id === characterId,
+      );
+      return {
+        ...foundCharacter,
+        avatar: faker.image.avatar(),
+      };
+    });
   }
 
   async quotes() {
